@@ -267,7 +267,6 @@ async function displayPosts(posts)
 
 function toggleComments(event, postId)
 {
-
     if (!event && !postId)
         return undefined;
 
@@ -283,25 +282,29 @@ async function refreshPosts(postsData)
     if (!postsData)
         return undefined;
 
-    const removeButtons = removeButtonListeners();
+    const buttonRemovers = removeButtonListeners();
     const main = deleteChildElements(document.querySelector('main'));
     const fragment = await displayPosts(postsData);
-    const addButtons = addButtonListeners();
+    const buttonAdders = addButtonListeners();
 
-    return [removeButtons, main, fragment, addButtons];
+    return [buttonRemovers, main, fragment, buttonAdders];
 }
 
 async function selectMenuChangeEventHandler(event)
 {
     if(!event)
-        return; 
-    
-    let select = document.querySelector("#selectMenu");
-    select.disabled = true;
-    let userId = event?.target?.value || 1;
-    let posts = await getUserPosts(userId);
-    let refreshPostsArray = await refreshPosts(posts);
-    select.disabled = false;
+        return undefined; 
+
+    const selection = document.querySelector("#selectMenu");
+    selection.disabled = true;
+    const userId =
+            event?.target?.value === "Employees" || !event?.target?.value
+                ? 1
+                : event?.target?.value;
+
+    const posts = await getUserPosts(userId);
+    const refreshPostsArray = await refreshPosts(posts);
+    selection.disabled = false;
     return [userId, posts, refreshPostsArray];
 }
 
@@ -320,3 +323,4 @@ function initApp()
         selectMenu.addEventListener('change', (event) => selectMenuChangeEventHandler(event));
     });
 }
+document.addEventListener("DOMContentLoaded", initApp);
